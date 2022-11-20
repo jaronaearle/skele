@@ -4,7 +4,11 @@ import (
 	"discord-hooks/internal/crawlers"
 	"discord-hooks/internal/data"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gocolly/colly"
 )
 
@@ -16,19 +20,39 @@ func main() {
 	c := colly.NewCollector()
 
 	ac := crawlers.NewAvyCrawler(c)
-	
-	test, _ := ac.GetReport()
+
+	test, err := ac.GetReport()
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(test)
-	
+
 	testData := data.AvyReport{
-		Date: "Saturday, November 19, 2022",
-		Details: "lksdjfaksljdfaksljdflaksdjfsdkljf alskdfjaklsjdfaskldjf asdffsd",
+		Date:     "Saturday, November 19, 2022",
+		Details:  "lksdjfaksljdfaksljdflaksdjfsdkljf alskdfjaklsjdfaskldjf asdffsd",
 		ImageUrl: "Saturday, November 19, 2022",
 	}
-	
+
 	fmt.Println(testData)
-	
+
+	dc, err := discordgo.New("token")
+	if err != nil {
+		panic(err)
+	}
+
+	err = dc.Open()
+	if err != nil {
+		fmt.Println("Error opening connection:", err)
+		panic(err)
+	}
+
+	fmt.Println("Captain Hook is running...")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	<-sc
+
+	defer dc.Close()
 
 	// data := Payload{
 	// 	Content: "From cron, with <3",
@@ -41,12 +65,12 @@ func main() {
 
 	// s.StartBlocking()
 
-
 	// err := postTest(data)
 	// if err != nil {
 	// 	panic(err)
 	// }
 }
+
 
 // func postTest(p Payload) (err error) {
 // 	pBytes, err := json.Marshal(p)
