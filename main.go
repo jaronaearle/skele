@@ -1,6 +1,7 @@
 package main
 
 import (
+	"discord-hooks/config"
 	"discord-hooks/internal/bot"
 	"discord-hooks/internal/crawlers"
 	"fmt"
@@ -8,13 +9,16 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/gocolly/colly"
 )
-
-const botToken = "<bot token>"
 type Payload struct {
 	Content string `json:"content"`
 }
 
 func main() {
+	cfg, err := config.GetConfig()
+	if err != nil {
+		fmt.Printf("main: Error initializing config: %v", err)
+	}
+
 	c := colly.NewCollector(colly.AllowedDomains("https://utahavalanchecenter.org/","https://utahavalanchecenter.org", "utahavalanchecenter.org/", "www.utahavalanchecenter.org/", "utahavalanchecenter.org"))
 
 	ac := crawlers.NewAvyCrawler(c)
@@ -27,7 +31,7 @@ func main() {
 
 	fmt.Println(test)
 
-	ds, err := discordgo.New(fmt.Sprintf("Bot %s", botToken))
+	ds, err := discordgo.New(cfg.BotToken)
 	if err != nil {
 		panic(err)
 	}
