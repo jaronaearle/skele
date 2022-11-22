@@ -37,6 +37,7 @@ func main() {
 	}
 
 	db := bot.NewDiscordBot(ds)
+	db.RegisterHandlers()
 	db.StartBotSession()
 
 	// data := Payload{
