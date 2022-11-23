@@ -35,7 +35,7 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	ac.Collector.OnResponse(func(r *colly.Response) {
 		fmt.Printf("\nReceived response from: %v\n", r.Request.URL)
 	})
-	
+
 	ac.Collector.OnError(func(r *colly.Response, err error) {
 		fmt.Println("Response error: ", err)
 	})
