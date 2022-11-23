@@ -1,0 +1,17 @@
+version: "3"
+
+tasks:
+  build:
+    desc: Build the skele
+    cmds:
+      - GOFLAGS=-mod=mod go build -o bin/skele main.go
+
+  run:
+    desc: Run the skele
+    cmds:
+      - GOFLAGS=-mod=mod go run main.go
+
+  bot:
+    desc: Execute the skele
+    cmds:
+      - ./bin/skele
