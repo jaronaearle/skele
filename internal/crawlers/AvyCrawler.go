@@ -1,8 +1,8 @@
 package crawlers
 
 import (
-	"discord-hooks/internal/data"
 	"fmt"
+	"skele/internal/data"
 	"time"
 
 	"github.com/gocolly/colly"
