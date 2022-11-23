@@ -1,4 +1,4 @@
-module discord-hooks
+module skele
 
 go 1.19
 
