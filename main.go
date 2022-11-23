@@ -1,10 +1,11 @@
 package main
 
 import (
-	"discord-hooks/config"
-	"discord-hooks/internal/bot"
-	"discord-hooks/internal/crawlers"
 	"fmt"
+	"skele/config"
+	"skele/internal/bot"
+	"skele/internal/crawlers"
+	"skele/internal/handlers"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gocolly/colly"
@@ -20,16 +21,7 @@ func main() {
 	}
 
 	c := colly.NewCollector(colly.AllowedDomains("https://utahavalanchecenter.org/","https://utahavalanchecenter.org", "utahavalanchecenter.org/", "www.utahavalanchecenter.org/", "utahavalanchecenter.org"))
-
 	ac := crawlers.NewAvyCrawler(c)
-
-	test, err := ac.GetReport()
-	if err != nil {
-		fmt.Println("Error calling GetReport: ", err)
-		panic(err)
-	}
-
-	fmt.Println(test)
 
 	ds, err := discordgo.New(cfg.BotToken)
 	if err != nil {
@@ -39,6 +31,13 @@ func main() {
 	db := bot.NewDiscordBot(ds)
 	db.RegisterHandlers()
 	db.StartBotSession()
+
+	avyReportHandler := handlers.AvyReportHandler{
+		AvyCrawler: ac,
+		DiscordBot: db,
+	}
+
+	avyReportHandler.SendAvyReport()
 
 	// data := Payload{
 	// 	Content: "From cron, with <3",
