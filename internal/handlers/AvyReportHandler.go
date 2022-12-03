@@ -11,7 +11,7 @@ import (
 
 const (
 	BASE_URL             = "https://utahavalanchecenter.org/"
-	FORECAST             = "forecast/salt-lake"
+	FORECAST             = "forecast/salt-lake/"
 	SKI_PEEPS_CHANNEL_ID = "894699071535718401"
 	EXP_CHANNEL_ID       = "899363073989689394"
 )
@@ -23,7 +23,7 @@ type AvyReportHandler struct {
 
 func (a *AvyReportHandler) SendAvyReport() {
 	rp, _ := a.getAvyReport()
-	em := a.buildReportEmbed(rp)
+	em := buildReportEmbed(rp)
 
 	// TODO: add dev flag to change channel ids when testing
 	_, err := a.DiscordBot.Session.ChannelMessageSendEmbed(EXP_CHANNEL_ID, em)
@@ -39,10 +39,11 @@ func (a *AvyReportHandler) getAvyReport() (rp data.AvyReport, err error) {
 		fmt.Println("getAvyReport: Error calling GetReport: ", err)
 		return
 	}
+
 	return
 }
 
-func (a *AvyReportHandler) buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
+func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 	url := fmt.Sprintf("%s%s", BASE_URL, FORECAST)
 	title := fmt.Sprintf("Avy Report: %s", rp.Date)
 	imgUrl := fmt.Sprintf("%s%s", BASE_URL, rp.ImageUrl)
@@ -57,5 +58,6 @@ func (a *AvyReportHandler) buildReportEmbed(rp data.AvyReport) (em *discordgo.Me
 			Height: 50,
 		},
 	}
+
 	return
 }
