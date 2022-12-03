@@ -40,14 +40,20 @@ func main() {
 	}
 
 	bot := bot.NewDiscordBot(session)
-	avyReportHandler := handlers.AvyReportHandler{
-		AvyCrawler: ac,
-		DiscordBot: bot,
+
+	h := Handlers{
+		AvyReporthandler: handlers.AvyReportHandler{
+			AvyCrawler: ac,
+			DiscordBot: bot,
+		},
+		ScheduledMessageHandler: handlers.ScheduledMessageHandler{
+			DiscordBot: bot,
+		},
 	}
 
 	ctx, cancel := context.WithCancel((context.Background()))
 
-	go startCron(ctx, avyReportHandler, cancel)
+	go startCron(ctx, h, cancel)
 	go startBot(ctx, bot, cancel)
 
 	sig := make(chan os.Signal, 3)
@@ -65,7 +71,7 @@ func main() {
 	fmt.Println("Gracefully returning to the grave...")
 }
 
-func startCron(pCtx context.Context, a handlers.AvyReportHandler, exit context.CancelFunc) {
+func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 	fmt.Println("Starting cron...")
 	defer exit()
 	defer fmt.Println("Exiting cron...")
@@ -78,7 +84,17 @@ func startCron(pCtx context.Context, a handlers.AvyReportHandler, exit context.C
 	s := gocron.NewScheduler(mtnTZ)
 
 	s.Every(1).Days().At("07:30").Do(func() {
-		a.SendAvyReport()
+		h.AvyReporthandler.SendAvyReport()
+	})
+
+	s.Every(1).Days().At("11:00").Do(func() {
+		m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
+		h.ScheduledMessageHandler.SendMessage(m, id)
+	})
+
+	s.Every(1).Days().At("9:30").Do(func() {
+		m, id := h.ScheduledMessageHandler.PrepareFHPMessage()
+		h.ScheduledMessageHandler.SendMessage(m, id)
 	})
 
 	s.StartBlocking()
@@ -99,4 +115,9 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, exit context.CancelFunc
 		fmt.Printf("startBot: Error opening websocket connection: %v", err)
 		return
 	}
+}
+
+type Handlers struct {
+	AvyReporthandler        handlers.AvyReportHandler
+	ScheduledMessageHandler handlers.ScheduledMessageHandler
 }
