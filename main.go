@@ -16,11 +16,6 @@ import (
 	"github.com/go-co-op/gocron"
 	"github.com/gocolly/colly"
 )
-
-var (
-	avyCenterDomains = []string{"https://utahavalanchecenter.org/", "https://utahavalanchecenter.org", "utahavalanchecenter.org/", "www.utahavalanchecenter.org/", "utahavalanchecenter.org"}
-)
-
 type Payload struct {
 	Content string `json:"content"`
 }
@@ -31,7 +26,7 @@ func main() {
 		fmt.Printf("main: Error initializing config: %v", err)
 	}
 
-	c := colly.NewCollector(colly.AllowedDomains(avyCenterDomains...))
+	c := colly.NewCollector(colly.AllowedDomains(crawlers.AvyCenterDomains...))
 	ac := crawlers.NewAvyCrawler(c)
 
 	session, err := discordgo.New(cfg.BotToken)
@@ -42,7 +37,7 @@ func main() {
 	bot := bot.NewDiscordBot(session)
 
 	h := Handlers{
-		AvyReporthandler: handlers.AvyReportHandler{
+		AvyReportHandler: handlers.AvyReportHandler{
 			AvyCrawler: ac,
 			DiscordBot: bot,
 		},
@@ -84,18 +79,20 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 	s := gocron.NewScheduler(mtnTZ)
 
 	s.Every(1).Days().At("07:30").Do(func() {
-		h.AvyReporthandler.SendAvyReport()
+		h.AvyReportHandler.SendAvyReport()
 	})
 
-	s.Every(1).Days().At("11:00").Do(func() {
-		m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
-		h.ScheduledMessageHandler.SendMessage(m, id)
-	})
+	// TODO: dev flag
+	// skip while developing
+	// s.Every(1).Days().At("11:00").Do(func() {
+	// 	m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
+	// 	h.ScheduledMessageHandler.SendMessage(m, id)
+	// })
 
-	s.Every(1).Days().At("9:30").Do(func() {
-		m, id := h.ScheduledMessageHandler.PrepareFHPMessage()
-		h.ScheduledMessageHandler.SendMessage(m, id)
-	})
+	// s.Every(1).Days().At("09:30").Do(func() {
+	// 	m, id := h.ScheduledMessageHandler.PrepareFHPMessage()
+	// 	h.ScheduledMessageHandler.SendMessage(m, id)
+	// })
 
 	s.StartBlocking()
 
@@ -118,6 +115,6 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, exit context.CancelFunc
 }
 
 type Handlers struct {
-	AvyReporthandler        handlers.AvyReportHandler
+	AvyReportHandler        handlers.AvyReportHandler
 	ScheduledMessageHandler handlers.ScheduledMessageHandler
 }

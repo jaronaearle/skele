@@ -5,7 +5,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 )
-
 type DiscordBot struct {
 	Session *discordgo.Session
 }

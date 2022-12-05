@@ -8,6 +8,10 @@ import (
 	"github.com/gocolly/colly"
 )
 
+var (
+	AvyCenterDomains = []string{"https://utahavalanchecenter.org/", "https://utahavalanchecenter.org", "utahavalanchecenter.org/", "www.utahavalanchecenter.org/", "utahavalanchecenter.org"}
+)
+
 type AvyCrawler struct {
 	Collector *colly.Collector
 	URL       string

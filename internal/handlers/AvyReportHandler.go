@@ -12,8 +12,6 @@ import (
 const (
 	BASE_URL             = "https://utahavalanchecenter.org/"
 	FORECAST             = "forecast/salt-lake/"
-	SKI_PEEPS_CHANNEL_ID = "894699071535718401"
-	EXP_CHANNEL_ID       = "899363073989689394"
 )
 
 type AvyReportHandler struct {
@@ -26,7 +24,7 @@ func (a *AvyReportHandler) SendAvyReport() {
 	em := buildReportEmbed(rp)
 
 	// TODO: add dev flag to change channel ids when testing
-	_, err := a.DiscordBot.Session.ChannelMessageSendEmbed(EXP_CHANNEL_ID, em)
+	_, err := a.DiscordBot.Session.ChannelMessageSendEmbed(data.EXP_CHANNEL_ID, em)
 	if err != nil {
 		fmt.Printf("SendAvyReport: Error sending embed message: %v\n", err)
 	}

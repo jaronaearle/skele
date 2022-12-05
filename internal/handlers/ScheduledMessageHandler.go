@@ -3,12 +3,12 @@ package handlers
 import (
 	"fmt"
 	"skele/internal/bot"
+	"skele/internal/data"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 const (
-	GENRAL_CHANNEL_ID = ""
 	WORDLE_URL        = "https://www.nytimes.com/games/wordle/index.html"
 	FHP_URL           = "https://fuckinghomepage.com/"
 )
@@ -28,13 +28,13 @@ func (s *ScheduledMessageHandler) SendMessage(m *discordgo.MessageEmbed, id stri
 
 func (s *ScheduledMessageHandler) PrepareWordleMessage() (m *discordgo.MessageEmbed, id string) {
 	m = buildMessageEmbed(WORDLE_URL, "Time to Wordle!")
-	id = WORDLE_URL
+	id = data.EXP_CHANNEL_ID
 	return
 }
 
 func (s *ScheduledMessageHandler) PrepareFHPMessage() (m *discordgo.MessageEmbed, id string) {
 	m = buildMessageEmbed(FHP_URL, "Learn some shit today")
-	id = FHP_URL
+	id = data.EXP_CHANNEL_ID
 	return
 }
 
