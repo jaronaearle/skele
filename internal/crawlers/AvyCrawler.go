@@ -47,7 +47,7 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		fmt.Println("attempting to crawl...")
 		rp.Date = e.ChildText(".text_01 .nowrap")
-		rp.Details = e.ChildText(".text_03 div")
+		rp.Details = e.ChildText(".text_03")
 		rp.ImageUrl = e.ChildAttr(".compass-width", "src")
 
 		fmt.Printf("\n\nDate: %v\nDetails: %v\nImgUrl: %v\n\n", rp.Date, rp.Details, rp.ImageUrl)
