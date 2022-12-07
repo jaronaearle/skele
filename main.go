@@ -82,17 +82,15 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 		h.AvyReportHandler.SendAvyReport()
 	})
 
-	// TODO: dev flag
-	// skip while developing
-	// s.Every(1).Days().At("11:00").Do(func() {
-	// 	m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
-	// 	h.ScheduledMessageHandler.SendMessage(m, id)
-	// })
+	s.Every(1).Days().At("11:00").Do(func() {
+		m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
+		h.ScheduledMessageHandler.SendMessage(m, id)
+	})
 
-	// s.Every(1).Days().At("09:30").Do(func() {
-	// 	m, id := h.ScheduledMessageHandler.PrepareFHPMessage()
-	// 	h.ScheduledMessageHandler.SendMessage(m, id)
-	// })
+	s.Every(1).Days().At("09:30").Do(func() {
+		m, id := h.ScheduledMessageHandler.PrepareFHPMessage()
+		h.ScheduledMessageHandler.SendMessage(m, id)
+	})
 
 	s.StartBlocking()
 
@@ -102,9 +100,6 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 
 func startBot(pCtx context.Context, bot *bot.DiscordBot, exit context.CancelFunc) {
 	fmt.Println("Starting bot session...")
-	defer exit()
-	defer fmt.Println("Exiting bot session...")
-
 	bot.RegisterHandlers()
 
 	err := bot.Session.Open()
@@ -112,6 +107,9 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, exit context.CancelFunc
 		fmt.Printf("startBot: Error opening websocket connection: %v", err)
 		return
 	}
+
+	defer exit()
+	defer fmt.Println("Exiting bot session...")
 }
 
 type Handlers struct {
