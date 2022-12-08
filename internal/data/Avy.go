@@ -1,6 +1,6 @@
 package data
 
-type AvyList struct {
+type Avy struct {
 	Date    string
 	Title   string
 	Region  string

@@ -40,7 +40,7 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	return
 }
 
-func (ac *AvyCrawler) GetTodaysAvyList() (av data.AvyList, err error) {
+func (ac *AvyCrawler) GetTodaysAvyList() (av []data.Avy, err error) {
 	configureCrawler(ac)
 
 	now := time.Now()
@@ -48,17 +48,27 @@ func (ac *AvyCrawler) GetTodaysAvyList() (av data.AvyList, err error) {
 	today := fmt.Sprintf("%d/%d/%d", now.Month(), 6, now.Year())
 	fmt.Println(today)
 
-	// var dates []string
-
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		fmt.Println("attempting to crawl...")
 
-		e.ForEach(".date-display-single", func(_ int, el *colly.HTMLElement) {
-			if el.Text == today {
+		var avy data.Avy
+
+		// e.ForEach(".date-display-single", func(_ int, el *colly.HTMLElement) {
+		e.ForEach("tbody tr", func(_ int, e *colly.HTMLElement) {
+			date := e.ChildText(".date-display-single")
+			if date == today {
 				fmt.Println("TODAY")
+				avy.Date = date
+				avy.Title = e.ChildText(".views-field-title")
+				avy.Url = e.ChildAttr(".views-field-title", "href")
+				avy.Region = e.ChildText(".views-field-field-region-forecaster")
+
+				fmt.Println(avy)
 			}
 		})
 	})
+
+	fmt.Println(av)
 
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Avalanches)
 	ac.Collector.Visit(url)
