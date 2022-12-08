@@ -10,11 +10,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const (
-	BASE_URL             = "https://utahavalanchecenter.org/"
-	FORECAST             = "forecast/salt-lake/"
-)
-
 type AvyReportHandler struct {
 	AvyCrawler *crawlers.AvyCrawler
 	DiscordBot *bot.DiscordBot
@@ -25,7 +20,7 @@ func (a *AvyReportHandler) SendAvyReport() {
 	em := buildReportEmbed(rp)
 
 	// TODO: add dev flag to change channel ids when testing
-	_, err := a.DiscordBot.Session.ChannelMessageSendEmbed(data.SKI_PEEPS_CHANNEL_ID, em)
+	_, err := a.DiscordBot.Session.ChannelMessageSendEmbed(data.ChannelIDs.SkiPeeps, em)
 	if err != nil {
 		fmt.Printf("SendAvyReport: Error sending embed message: %v\n", err)
 	}
@@ -43,9 +38,9 @@ func (a *AvyReportHandler) getAvyReport() (rp data.AvyReport, err error) {
 }
 
 func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
-	url := fmt.Sprintf("%s%s", BASE_URL, FORECAST)
+	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Forecast)
 	title := fmt.Sprintf("Avy Report: %s", rp.Date)
-	imgUrl := fmt.Sprintf("%s%s", BASE_URL, rp.ImageUrl)
+	imgUrl := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, rp.ImageUrl)
 
 	em = &discordgo.MessageEmbed{
 		URL:         url,
@@ -59,4 +54,12 @@ func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 	}
 
 	return
+}
+
+func (a *AvyReportHandler) SendTodaysAvyList() {
+	_, err := a.AvyCrawler.GetTodaysAvyList()
+	if err != nil {
+		fmt.Println("SendTodaysAvyList: Error: ", err)
+		return
+	}
 }

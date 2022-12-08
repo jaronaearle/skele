@@ -16,6 +16,7 @@ import (
 	"github.com/go-co-op/gocron"
 	"github.com/gocolly/colly"
 )
+
 type Payload struct {
 	Content string `json:"content"`
 }
@@ -46,10 +47,12 @@ func main() {
 		},
 	}
 
+	h.AvyReportHandler.SendTodaysAvyList()
+
 	ctx, cancel := context.WithCancel((context.Background()))
 
 	go startCron(ctx, h, cancel)
-	go startBot(ctx, bot, cancel)
+	go startBot(ctx, bot, h, cancel)
 
 	sig := make(chan os.Signal, 3)
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP, os.Interrupt)
@@ -98,7 +101,7 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 	// <- pCtx.Done()
 }
 
-func startBot(pCtx context.Context, bot *bot.DiscordBot, exit context.CancelFunc) {
+func startBot(pCtx context.Context, bot *bot.DiscordBot, h Handlers, exit context.CancelFunc) {
 	fmt.Println("Starting bot session...")
 	bot.RegisterHandlers()
 
@@ -108,8 +111,8 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, exit context.CancelFunc
 		return
 	}
 
-	defer exit()
-	defer fmt.Println("Exiting bot session...")
+	// defer exit()
+	// defer fmt.Println("Exiting bot session...")
 }
 
 type Handlers struct {
