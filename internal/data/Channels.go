@@ -1,7 +1,13 @@
 package data
 
-const (
-	SKI_PEEPS_CHANNEL_ID = "894699071535718401"
-	EXP_CHANNEL_ID       = "899363073989689394"
-	GENERAL_CHANNEL_ID = "894694190695448647"
-)
+type DiscordChannelIDs struct {
+	Exp      string
+	General  string
+	SkiPeeps string
+}
+
+var ChannelIDs = DiscordChannelIDs{
+	Exp:      "899363073989689394",
+	General:  "894694190695448647",
+	SkiPeeps: "894699071535718401",
+}
