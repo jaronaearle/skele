@@ -30,7 +30,7 @@ func (s *ScheduledMessageHandler) SendMessage(m *discordgo.MessageEmbed, id stri
 
 func (s *ScheduledMessageHandler) PrepareWordleMessage() (m *discordgo.MessageEmbed, id string) {
 	m = buildMessageEmbed(WORDLE_URL, WORDLE_IMG_URL, "Time to Wordle!")
-	id = data.ChannelIDs.Exp
+	id = data.ChannelIDs.General
 	return
 }
 
@@ -40,6 +40,7 @@ func (s *ScheduledMessageHandler) PrepareFHPMessage() (m *discordgo.MessageEmbed
 	return
 }
 
+// Will probably want to break embeds out into their own templates.
 func buildMessageEmbed(url, imgUrl, title string) (m *discordgo.MessageEmbed) {
 	m = &discordgo.MessageEmbed{
 		URL:   url,
