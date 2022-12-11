@@ -6,12 +6,12 @@ tasks:
     cmds:
       - GOFLAGS=-mod=mod go build -o bin/skele main.go
 
-  run:
+  run-exp:
     desc: Run the skele
     cmds:
-      - GOFLAGS=-mod=mod go run main.go
+      - GOFLAGS=-mod=mod go run main.go -e=true
 
-  bot:
+  run-bot:
     desc: Execute the skele
     cmds:
       - ./bin/skele
