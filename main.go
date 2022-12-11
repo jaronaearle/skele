@@ -52,7 +52,7 @@ func main() {
 		},
 	}
 
-	// h.AvyReportHandler.SendTodaysAvyList()
+	h.AvyReportHandler.SendTodaysAvyList()
 
 	ctx, cancel := context.WithCancel((context.Background()))
 

@@ -9,7 +9,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 )
-
 type AvyCrawlerHandler struct {
 	AvyCrawler *crawlers.AvyCrawler
 	DiscordBot *bot.DiscordBot
@@ -22,6 +21,7 @@ func (a *AvyCrawlerHandler) SendAvyReport() {
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
 	if err != nil {
 		fmt.Printf("SendAvyReport: Error sending embed message: %v\n", err)
+		return
 	}
 	fmt.Printf("SendAvyReport: sent report message - %v\n", time.Now())
 }
@@ -58,7 +58,7 @@ func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 func (a *AvyCrawlerHandler) SendTodaysAvyList() {
 	avs, date, _ := a.getAvyList()
 	em := buildTodaysAvyEmbed(avs, date)
-	
+
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
 	if err != nil {
 		fmt.Printf("SendAvyReport: Error sending embed message: %v\n", err)
@@ -82,13 +82,16 @@ func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbe
 	var list string
 
 	for _, a := range avs {
-		list = fmt.Sprintf(`%s<li><h4><a href="%s">%s</a></h4></li>`, list, fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, a.Url), a.Title)
+		list = fmt.Sprintf("%s\n%s\n%s\n", list, fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, a.Url), a.Title)
 	}
 	fmt.Println(avs)
 	fmt.Println(list)
 
 	em = &discordgo.MessageEmbed{
-		Description: ""}
+		// URL:         url,
+		Title:       "Avys today",
+		Description: list,
+	}
 
 	return
 }

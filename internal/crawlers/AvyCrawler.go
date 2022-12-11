@@ -39,7 +39,7 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	return
 }
 
-func (ac *AvyCrawler) GetTodaysAvyList() (avySlice []data.Avy, err error) {
+func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, date string, err error) {
 	configureCrawler(ac)
 
 	now := time.Now()
@@ -48,20 +48,17 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avySlice []data.Avy, err error) {
 	fmt.Println(today)
 
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
-		fmt.Println("attempting to crawl...")
-
 		var avy data.Avy
 
 		e.ForEach("tbody tr", func(_ int, e *colly.HTMLElement) {
-			date := e.ChildText(".date-display-single")
+			date = e.ChildText(".date-display-single")
 			if date == today {
-				fmt.Println("TODAY")
 				avy.Date = date
 				avy.Title = e.ChildText(".views-field-title")
 				avy.Url = e.ChildAttr(".views-field-title a", "href")
 				avy.Region = e.ChildText(".views-field-field-region-forecaster")
 
-				avySlice = append(avySlice, avy)
+				avs = append(avs, avy)
 			}
 		})
 	})
