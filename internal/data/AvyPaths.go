@@ -8,8 +8,8 @@ type AvyCenterUrlPaths struct {
 }
 
 var AvyUrlPaths = AvyCenterUrlPaths{
-	BaseUrl:      "https://utahavalanchecenter.org/",
-	Forecast:     "forecast/salt-lake/",
-	Avalanches:   "avalanches/",
-	Observations: "observations/",
+	BaseUrl:      "https://utahavalanchecenter.org",
+	Forecast:     "/forecast/salt-lake",
+	Avalanches:   "/avalanches",
+	Observations: "/observations",
 }

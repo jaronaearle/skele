@@ -17,8 +17,10 @@ func GetConfig() (config Config, err error) {
 		fmt.Printf("GetConfig: Error loading bot token: %v", err)
 		return
 	}
+
 	token := fmt.Sprintf("Bot %s", bt)
 	config = Config{BotToken: token}
+
 	return
 }
 
@@ -29,5 +31,6 @@ func getEnvVar(k string) (v string, err error) {
 		return
 	}
 	v = os.Getenv(k)
+
 	return
 }
