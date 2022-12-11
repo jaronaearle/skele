@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -17,14 +18,18 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type Payload struct {
-	Content string `json:"content"`
-}
+var (
+	exp bool
+)
 
 func main() {
+	flag.BoolVar(&exp, "e", false, "Point channels to experiments channel")
+	flag.Parse()
+
 	cfg, err := config.GetConfig()
 	if err != nil {
 		fmt.Printf("main: Error initializing config: %v", err)
+		panic(err)
 	}
 
 	c := colly.NewCollector(colly.AllowedDomains(crawlers.AvyCenterDomains...))
@@ -35,10 +40,10 @@ func main() {
 		panic(err)
 	}
 
-	bot := bot.NewDiscordBot(session)
+	bot := bot.NewDiscordBot(session, exp)
 
 	h := Handlers{
-		AvyReportHandler: handlers.AvyReportHandler{
+		AvyReportHandler: handlers.AvyCrawlerHandler{
 			AvyCrawler: ac,
 			DiscordBot: bot,
 		},
@@ -47,7 +52,7 @@ func main() {
 		},
 	}
 
-	h.AvyReportHandler.SendTodaysAvyList()
+	// h.AvyReportHandler.SendTodaysAvyList()
 
 	ctx, cancel := context.WithCancel((context.Background()))
 
@@ -116,6 +121,6 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, h Handlers, exit contex
 }
 
 type Handlers struct {
-	AvyReportHandler        handlers.AvyReportHandler
+	AvyReportHandler        handlers.AvyCrawlerHandler
 	ScheduledMessageHandler handlers.ScheduledMessageHandler
 }
