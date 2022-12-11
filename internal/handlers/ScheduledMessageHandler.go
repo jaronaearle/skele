@@ -20,23 +20,25 @@ type ScheduledMessageHandler struct {
 }
 
 func (s *ScheduledMessageHandler) SendMessage(m *discordgo.MessageEmbed, id string) {
-	// TODO: add dev flag to change channel ids when testing
-	_, err := s.DiscordBot.Session.ChannelMessageSendEmbed(id, m)
+	err := s.DiscordBot.SendEmbedMessage(m, id)
 	if err != nil {
 		fmt.Printf("ScheduledMessageHandler: Error sending embed message: %v\n", err)
 	}
-	fmt.Printf("SendMessage: sent %v message - %v\n", m.Title, time.Now())
+
+	fmt.Printf("SendMessage: sent %v message - %v\n", m.Title, time.Now().Local())
 }
 
 func (s *ScheduledMessageHandler) PrepareWordleMessage() (m *discordgo.MessageEmbed, id string) {
 	m = buildMessageEmbed(WORDLE_URL, WORDLE_IMG_URL, "Time to Wordle!")
 	id = data.ChannelIDs.General
+
 	return
 }
 
 func (s *ScheduledMessageHandler) PrepareFHPMessage() (m *discordgo.MessageEmbed, id string) {
 	m = buildMessageEmbed(FHP_URL, "", "Learn some shit today")
 	id = data.ChannelIDs.Exp
+	
 	return
 }
 
