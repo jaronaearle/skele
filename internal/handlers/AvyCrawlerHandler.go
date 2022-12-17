@@ -58,6 +58,11 @@ func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 
 func (a *AvyCrawlerHandler) SendTodaysAvyList() {
 	avs, date, _ := a.getAvyList()
+	if len(avs) == 0 {
+		fmt.Println("SendTodaysAvyList: no avys today, exiting")
+		return
+	}
+	
 	em := buildTodaysAvyEmbed(avs, date)
 
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
@@ -81,6 +86,8 @@ func (a *AvyCrawlerHandler) getAvyList() (avs []data.Avy, date string, err error
 
 func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbed) {
 	var list string
+	title := fmt.Sprintf("Avalanche Activity %s", date)
+
 
 	for _, a := range avs {
 		list = fmt.Sprintf("%s\n%s\n%s\n", list, fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, a.Url), a.Title)
@@ -88,9 +95,9 @@ func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbe
 	fmt.Println(avs)
 	fmt.Println(list)
 
+
 	em = &discordgo.MessageEmbed{
-		// URL:         url,
-		Title:       "Avys today",
+		Title:       title,
 		Description: list,
 	}
 
