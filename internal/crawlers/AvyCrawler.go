@@ -29,8 +29,9 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 		rp.Date = e.ChildText(".text_01 .nowrap")
 		rp.Details = e.ChildText(".text_03")
 		rp.ImageUrl = e.ChildAttr(".compass-width", "src")
+		rp.SpecialBulletin = e.ChildText(".page-content .mb3")
 
-		fmt.Printf("\n\nDate: %v\nDetails: %v\nImgUrl: %v\n\n", rp.Date, rp.Details, rp.ImageUrl)
+		fmt.Printf("\n\nDate: %v\nDetails: %v\nImgUrl: %v\nSpecialBulletin: %v\n\n", rp.Date, rp.Details, rp.ImageUrl, rp.SpecialBulletin)
 	})
 
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Forecast)
@@ -43,8 +44,7 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, date string, err error
 	configureCrawler(ac)
 
 	now := time.Now()
-	// today := fmt.Sprintf("%d/%d/%d", now.Month(), now.Day(), now.Year())
-	today := fmt.Sprintf("%d/%d/%d", now.Month(), 6, now.Year())
+	today := fmt.Sprintf("%d/%d/%d", now.Month(), now.Day(), now.Year())
 	fmt.Println(today)
 
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {

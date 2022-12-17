@@ -39,12 +39,13 @@ func (a *AvyCrawlerHandler) getAvyReport() (rp data.AvyReport, err error) {
 func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Forecast)
 	title := fmt.Sprintf("Avy Report: %s", rp.Date)
+	description := fmt.Sprintf("%s\n\n%s", rp.Details, rp.SpecialBulletin)
 	imgUrl := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, rp.ImageUrl)
 
 	em = &discordgo.MessageEmbed{
 		URL:         url,
 		Title:       title,
-		Description: rp.Details,
+		Description: description, 
 		Image: &discordgo.MessageEmbedImage{
 			URL:    imgUrl,
 			Width:  50,
