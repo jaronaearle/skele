@@ -88,15 +88,19 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 		h.AvyReportHandler.SendAvyReport()
 	})
 
-	s.Every(1).Days().At("11:00").Do(func() {
-		m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
-		h.ScheduledMessageHandler.SendMessage(m, id)
+	s.Every(1).Days().At("23:30").Do(func() {
+		h.AvyReportHandler.SendTodaysAvyList()
 	})
 
-	s.Every(1).Days().At("09:30").Do(func() {
-		m, id := h.ScheduledMessageHandler.PrepareFHPMessage()
-		h.ScheduledMessageHandler.SendMessage(m, id)
-	})
+	// s.Every(1).Days().At("11:00").Do(func() {
+	// 	m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
+	// 	h.ScheduledMessageHandler.SendMessage(m, id)
+	// })
+
+	// s.Every(1).Days().At("09:30").Do(func() {
+	// 	m, id := h.ScheduledMessageHandler.PrepareFHPMessage()
+	// 	h.ScheduledMessageHandler.SendMessage(m, id)
+	// })
 
 	s.StartBlocking()
 
