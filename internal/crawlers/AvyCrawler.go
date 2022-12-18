@@ -45,7 +45,6 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 
 	now := time.Now()
 	today = fmt.Sprintf("%d/%d/%d", now.Month(), now.Day(), now.Year())
-	fmt.Println(today)
 
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		var avy data.Avy

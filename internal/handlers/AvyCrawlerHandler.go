@@ -5,9 +5,18 @@ import (
 	"skele/internal/bot"
 	"skele/internal/crawlers"
 	"skele/internal/data"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+)
+
+const (
+	slc =  "Salt Lake"
+	ogden = "Ogden"
+	provo = "Provo"
+	uintas = "Uintas"
+	moab = "Moab"
 )
 type AvyCrawlerHandler struct {
 	AvyCrawler *crawlers.AvyCrawler
@@ -62,7 +71,7 @@ func (a *AvyCrawlerHandler) SendTodaysAvyList() {
 		fmt.Println("SendTodaysAvyList: no avys today, exiting")
 		return
 	}
-	
+
 	em := buildTodaysAvyEmbed(avs, date)
 
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
@@ -85,21 +94,56 @@ func (a *AvyCrawlerHandler) getAvyList() (avs []data.Avy, date string, err error
 }
 
 func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbed) {
-	var list string
 	title := fmt.Sprintf("Avalanche Activity %s", date)
 
+	slcList := filterByRegion(avs, slc)
+	ogList := filterByRegion(avs, ogden)
+	prList := filterByRegion(avs, provo)
+	uList := filterByRegion(avs, uintas)
+	mList := filterByRegion(avs, moab)
 
-	for _, a := range avs {
-		list = fmt.Sprintf("%s\n%s\n%s\n", list, fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, a.Url), a.Title)
-	}
-	fmt.Println(avs)
-	fmt.Println(list)
+	slcAvy := formatByRegion(slcList, slc)
+	ogAvy := formatByRegion(ogList, ogden)
+	prAvy := formatByRegion(prList, provo)
+	uAvy := formatByRegion(uList, uintas)
+	mAvy := formatByRegion(mList, moab)
+
+	content := fmt.Sprintf("%s\n%s%s%s%s", slcAvy, ogAvy, prAvy, uAvy, mAvy)
+	fmt.Println(content)
 
 
 	em = &discordgo.MessageEmbed{
 		Title:       title,
-		Description: list,
+		Description: content,
 	}
+
+	return
+}
+
+func filterByRegion(avs []data.Avy, r string) (fAvs []data.Avy) {
+	for _, a := range avs {
+		if strings.ToLower(a.Region) == strings.ToLower(r) {
+			fAvs = append(fAvs, a)
+		}
+	}
+	
+	return
+}
+
+func formatByRegion(avs []data.Avy, r string) (regionAvys string) {
+	if len(avs) == 0 {
+		fmt.Printf("formatByRegion: no avy activity for given region: %s\n", r)
+		return
+	}
+
+	var avys string
+
+	for _, a := range avs {
+		avys = fmt.Sprintf("%s\n%s\n%s\n", avys, a.Title, fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, a.Url))
+	}
+
+	regionAvys = fmt.Sprintf("%s\n%s\n", r, avys)
+	fmt.Println(regionAvys)
 
 	return
 }
