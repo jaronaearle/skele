@@ -1,22 +1,22 @@
-name: Build & Deploy
-on:
-  push:
-    branches: [main]
+# name: Build & Deploy
+# on:
+#   push:
+#     branches: [main]
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy Skele Bot
-        uses: appleboy/ssh-action@v0.1.2
-        with:
-          host: ${{secrets.SSH_HOST}}
-          key: ${{secrets.SSH_KEY}}
-          username: ${{ secrets.SSH_USER }}
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Deploy Skele Bot
+#         uses: appleboy/ssh-action@v0.1.2
+#         with:
+#           host: ${{secrets.SSH_HOST}}
+#           key: ${{secrets.SSH_KEY}}
+#           username: ${{ secrets.SSH_USER }}
 
-          script: |
-            mkdir -p skele-ci 
-            cd skele-ci 
-            git clone git@github.com:jaronaearle/skele-.git 
-            ls -a 
-            echo 'Deployment successful to digital ocean?'
+#           script: |
+#             mkdir -p skele-ci
+#             cd skele-ci
+#             git clone git@github.com:jaronaearle/skele-.git
+#             ls -a
+#             echo 'Deployment successful to digital ocean?'

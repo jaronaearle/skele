@@ -109,7 +109,7 @@ func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbe
 	mAvy := formatByRegion(mList, moab)
 
 	content := fmt.Sprintf("%s\n%s%s%s%s", slcAvy, ogAvy, prAvy, uAvy, mAvy)
-	fmt.Println(content)
+	fmt.Printf("buildTodaysAvyEmbed: content: %s/n", content)
 
 
 	em = &discordgo.MessageEmbed{
