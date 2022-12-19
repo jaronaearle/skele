@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
+	"github.com/honeybadger-io/honeybadger-go"
 )
 
 var (
@@ -84,6 +85,6 @@ func configureCrawler(ac *AvyCrawler) {
 	})
 
 	ac.Collector.OnError(func(r *colly.Response, err error) {
-		fmt.Println("Response error: ", err)
+		honeybadger.Notify("AvyCrawler: Error on response from: %v\n%w",r.Request.URL, err)
 	})
 }

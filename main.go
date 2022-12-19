@@ -16,6 +16,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-co-op/gocron"
 	"github.com/gocolly/colly"
+	"github.com/honeybadger-io/honeybadger-go"
 )
 
 var (
@@ -23,12 +24,13 @@ var (
 )
 
 func main() {
+	defer honeybadger.Monitor()
 	flag.BoolVar(&exp, "e", false, "Point channels to experiments channel")
 	flag.Parse()
 
 	cfg, err := config.GetConfig()
 	if err != nil {
-		fmt.Printf("main: Error initializing config: %v", err)
+		honeybadger.Notify("main: Error initializing config: %w", err)
 		panic(err)
 	}
 
@@ -37,6 +39,7 @@ func main() {
 
 	session, err := discordgo.New(cfg.BotToken)
 	if err != nil {
+		honeybadger.Notify("main: Error creating bot session: %w", err)
 		panic(err)
 	}
 
@@ -79,7 +82,7 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 
 	mtnTZ, err := time.LoadLocation("America/Denver")
 	if err != nil {
-		fmt.Printf("Error loading america/denver tz: %s", err)
+		honeybadger.Notify("Error loading america/denver tz: %w", err)
 		return
 	}
 	s := gocron.NewScheduler(mtnTZ)
@@ -114,7 +117,7 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, h Handlers, exit contex
 
 	err := bot.Session.Open()
 	if err != nil {
-		fmt.Printf("startBot: Error opening websocket connection: %v", err)
+		honeybadger.Notify("startBot: Error opening websocket connection: %w", err)
 		return
 	}
 

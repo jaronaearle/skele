@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/honeybadger-io/honeybadger-go"
 )
 
 type DiscordBot struct {
@@ -36,7 +37,7 @@ func (db *DiscordBot) SendEmbedMessage(m *discordgo.MessageEmbed, id string) (er
 
 	_, err = db.Session.ChannelMessageSendEmbed(channel, m)
 	if err != nil {
-		fmt.Printf("SendMessageEmbed: Error sending embed message: %v\n", err)
+		honeybadger.Notify("SendMessageEmbed: Error sending embed message: %w\n", err)
 		return
 	}
 	
@@ -54,7 +55,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == "" {
 		msgs, err := s.ChannelMessages(m.ChannelID, 1, "", "", m.ID)
 		if err != nil {
-			fmt.Printf("messageCreate: Error getting channel messages: %v", err)
+			honeybadger.Notify("messageCreate: Error getting channel messages: %w", err)
 		}
 		fmt.Println(msgs)
 	}

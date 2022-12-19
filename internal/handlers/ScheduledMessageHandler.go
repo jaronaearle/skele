@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/honeybadger-io/honeybadger-go"
 )
 
 const (
@@ -22,7 +23,7 @@ type ScheduledMessageHandler struct {
 func (s *ScheduledMessageHandler) SendMessage(m *discordgo.MessageEmbed, id string) {
 	err := s.DiscordBot.SendEmbedMessage(m, id)
 	if err != nil {
-		fmt.Printf("ScheduledMessageHandler: Error sending embed message: %v\n", err)
+		honeybadger.Notify("ScheduledMessageHandler: Error sending embed message: %w\n", err)
 	}
 
 	fmt.Printf("SendMessage: sent %v message - %v\n", m.Title, time.Now().Local())

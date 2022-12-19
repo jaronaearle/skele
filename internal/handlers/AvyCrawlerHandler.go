@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/honeybadger-io/honeybadger-go"
 )
 
 const (
@@ -29,7 +30,7 @@ func (a *AvyCrawlerHandler) SendAvyReport() {
 
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
 	if err != nil {
-		fmt.Printf("SendAvyReport: Error sending embed message: %v\n", err)
+		honeybadger.Notify("SendAvyReport: Error sending embed message: %w\n", err)
 		return
 	}
 	fmt.Printf("SendAvyReport: sent report message - %v\n", time.Now())
@@ -38,7 +39,7 @@ func (a *AvyCrawlerHandler) SendAvyReport() {
 func (a *AvyCrawlerHandler) getAvyReport() (rp data.AvyReport, err error) {
 	rp, err = a.AvyCrawler.GetReport()
 	if err != nil {
-		fmt.Println("getAvyReport: Error calling GetReport: ", err)
+		honeybadger.Notify("getAvyReport: Error calling GetReport: %w", err)
 		return
 	}
 
@@ -76,7 +77,7 @@ func (a *AvyCrawlerHandler) SendTodaysAvyList() {
 
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
 	if err != nil {
-		fmt.Printf("SendAvyReport: Error sending embed message: %v\n", err)
+		honeybadger.Notify("SendAvyReport: Error sending embed message: %w\n", err)
 		return
 	}
 
@@ -86,7 +87,7 @@ func (a *AvyCrawlerHandler) SendTodaysAvyList() {
 func (a *AvyCrawlerHandler) getAvyList() (avs []data.Avy, date string, err error) {
 	avs, date, err = a.AvyCrawler.GetTodaysAvyList()
 	if err != nil {
-		fmt.Println("getAvyList: Error: ", err)
+		honeybadger.Notify("getAvyList: Error: %w", err)
 		return
 	}
 
