@@ -3,6 +3,7 @@ package crawlers
 import (
 	"fmt"
 	"skele/internal/data"
+	"strings"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -46,20 +47,22 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 
 	now := time.Now()
 	today = fmt.Sprintf("%d/%d/%d", now.Month(), now.Day(), now.Year())
+	fmt.Println(today)
 
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		var avy data.Avy
 
 		e.ForEach("tbody tr", func(_ int, e *colly.HTMLElement) {
 			date := e.ChildText(".date-display-single")
-			if date == today {
+			fmt.Println(date)
+			if strings.EqualFold(date, today) {
 				avy.Date = date
 				avy.Title = e.ChildText(".views-field-title")
 				avy.Url = e.ChildAttr(".views-field-title a", "href")
 				avy.Region = e.ChildText(".views-field-field-region-forecaster")
 
 				avs = append(avs, avy)
-			}
+			} 
 		})
 	})
 

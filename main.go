@@ -46,7 +46,7 @@ func main() {
 	bot := bot.NewDiscordBot(session, exp)
 
 	h := Handlers{
-		AvyReportHandler: handlers.AvyCrawlerHandler{
+		AvyCrawlerHandler: handlers.AvyCrawlerHandler{
 			AvyCrawler: ac,
 			DiscordBot: bot,
 		},
@@ -88,11 +88,11 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 	s := gocron.NewScheduler(mtnTZ)
 
 	s.Every(1).Days().At("07:30").Do(func() {
-		h.AvyReportHandler.SendAvyReport()
+		h.AvyCrawlerHandler.SendAvyReport()
 	})
 
 	s.Every(1).Days().At("23:30").Do(func() {
-		h.AvyReportHandler.SendTodaysAvyList()
+		h.AvyCrawlerHandler.SendTodaysAvyList()
 	})
 
 	// s.Every(1).Days().At("11:00").Do(func() {
@@ -126,6 +126,6 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, h Handlers, exit contex
 }
 
 type Handlers struct {
-	AvyReportHandler        handlers.AvyCrawlerHandler
+	AvyCrawlerHandler        handlers.AvyCrawlerHandler
 	ScheduledMessageHandler handlers.ScheduledMessageHandler
 }

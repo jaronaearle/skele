@@ -110,7 +110,7 @@ func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbe
 	mAvy := formatByRegion(mList, moab)
 
 	content := fmt.Sprintf("%s\n%s%s%s%s", slcAvy, ogAvy, prAvy, uAvy, mAvy)
-	fmt.Printf("buildTodaysAvyEmbed: content: %s/n", content)
+	fmt.Printf("buildTodaysAvyEmbed: content: %s\n", content)
 
 
 	em = &discordgo.MessageEmbed{
@@ -123,7 +123,7 @@ func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbe
 
 func filterByRegion(avs []data.Avy, r string) (fAvs []data.Avy) {
 	for _, a := range avs {
-		if strings.ToLower(a.Region) == strings.ToLower(r) {
+		if strings.EqualFold(a.Region, r) {
 			fAvs = append(fAvs, a)
 		}
 	}
