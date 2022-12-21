@@ -28,6 +28,8 @@ func (a *AvyCrawlerHandler) SendAvyReport() {
 	rp, _ := a.getAvyReport()
 	em := buildReportEmbed(rp)
 
+	fmt.Printf("SendAvyReport: Report: %v - %v\n", rp, time.Now())
+
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
 	if err != nil {
 		honeybadger.Notify("SendAvyReport: Error sending embed message: %w\n", err)
@@ -43,6 +45,9 @@ func (a *AvyCrawlerHandler) getAvyReport() (rp data.AvyReport, err error) {
 		return
 	}
 
+	fmt.Printf("getAvyReport: Report: %v - %v\n", rp, time.Now())
+
+
 	return
 }
 
@@ -51,6 +56,8 @@ func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 	title := fmt.Sprintf("Avy Report: %s", rp.Date)
 	description := fmt.Sprintf("%s\n\n%s", rp.Details, rp.SpecialBulletin)
 	imgUrl := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, rp.ImageUrl)
+
+	fmt.Printf("buildReportEmbed: Report: %v - %v\n", rp, time.Now())
 
 	em = &discordgo.MessageEmbed{
 		URL:         url,
