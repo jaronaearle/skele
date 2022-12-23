@@ -82,11 +82,16 @@ func configureCrawler(ac *AvyCrawler) {
 	ac.Collector.SetRequestTimeout(60 * time.Second)
 
 	ac.Collector.OnRequest(func(r *colly.Request) {
-		fmt.Printf("Visiting %v", r.URL.String())
+		fmt.Printf("Visiting %v\n", r.URL.String())
 	})
 
 	ac.Collector.OnResponse(func(r *colly.Response) {
 		fmt.Printf("\nReceived response from: %v\n", r.Request.URL)
+		fmt.Printf("\nResponse request: %v\n", r.Request)
+		fmt.Printf("\nResponse headers: %v\n", r.Headers)
+		fmt.Printf("\nResponse body: %v\n", string(r.Body))
+		fmt.Printf("\nResponse statusCode: %v\n", r.StatusCode)
+		fmt.Printf("\nResponse ctx: %v\n", r.Ctx)
 	})
 
 	ac.Collector.OnError(func(r *colly.Response, err error) {
