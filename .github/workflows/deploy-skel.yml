@@ -20,7 +20,7 @@ jobs:
             mkdir -p $WORKING_DIR
             cd $WORKING_DIR
 
-            if [ -d $REPO ]; then
+            if [ ! -d $REPO ]; then
               echo "working directory is empty, cloning skele..."
               # git clone git@github.com:jaronaearle/skele.git
               cd $REPO
@@ -36,9 +36,10 @@ jobs:
             cat .env
 
             # time to build -- need to find and kill other docker bot processes running
-            docker ps
 
             task docker-build
             echo "bot built"
             task docker-bot
             echo "bot container running..."
+
+            docker ps
