@@ -4,10 +4,10 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  deploy_bot:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy Skele Bot
+      - name: Configure working directory
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -15,8 +15,18 @@ jobs:
           username: ${{ secrets.SSH_USER }}
 
           script: |
-            mkdir -p skele-ci
-            cd skele-ci
-            git clone git@github.com:jaronaearle/skele.git
-            ls -a
-            echo 'Deployment successful to digital ocean?'
+            WORKING_DIR="skele-ci"
+            REPO="skele"
+            mkdir -p $WORKING_DIR
+            cd $WORKING_DIR
+
+            if [ ! -d $REPO ]; then
+              echo "working dir is empty, cloning skele"
+              git clone git@github.com:jaronaearle/skele.git
+            else
+              echo "working is exists, let check it out"
+              cd $REPO
+            fi
+
+            pwd 
+            ls
