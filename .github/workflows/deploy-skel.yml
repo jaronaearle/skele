@@ -20,13 +20,25 @@ jobs:
             mkdir -p $WORKING_DIR
             cd $WORKING_DIR
 
-            if [ ! -d $REPO ]; then
-              echo "working dir is empty, cloning skele"
-              git clone git@github.com:jaronaearle/skele.git
-            else
-              echo "working is exists, let check it out"
+            if [ -d $REPO ]; then
+              echo "working directory is empty, cloning skele..."
+              # git clone git@github.com:jaronaearle/skele.git
               cd $REPO
+
+            else
+              echo "repo exists, pulling latest changes..."
+              cd $REPO
+              git pull
             fi
 
-            pwd 
-            ls
+            echo ${{ secrets.BOT_TOKEN }} > .env
+            echo ${{ secrets.HONEY_BADGER_API_KEY }} >> .env
+            cat .env
+
+            # time to build -- need to find and kill other docker bot processes running
+            docker ps
+
+            task docker-build
+            echo "bot built"
+            task docker-bot
+            echo "bot container running..."
