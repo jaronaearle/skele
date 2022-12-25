@@ -95,6 +95,10 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 		h.AvyCrawlerHandler.SendTodaysAvyList()
 	})
 
+	s.Every(1).Days().At("23:45").Do(func() {
+		h.AvyCrawlerHandler.SendTodaysAvyList()
+	})
+
 	// s.Every(1).Days().At("11:00").Do(func() {
 	// 	m, id := h.ScheduledMessageHandler.PrepareWordleMessage()
 	// 	h.ScheduledMessageHandler.SendMessage(m, id)
