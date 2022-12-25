@@ -95,7 +95,7 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 		h.AvyCrawlerHandler.SendTodaysAvyList()
 	})
 
-	s.Every(1).Days().At("23:55").Do(func() {
+	s.Every(1).Days().At("00:00").Do(func() {
 		h.AvyCrawlerHandler.SendTodaysAvyList()
 	})
 
