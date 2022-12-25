@@ -31,6 +31,7 @@ jobs:
             echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
             echo "HONEY_BADGER_API_KEY=${{ secrets.HONEY_BADGER_API_KEY }}" >> .env
             # time to build -- need to find and kill other docker bot processes running
+            docker stop $(docker ps -q)
             task docker-build
             echo "bot built"
             task docker-bot
