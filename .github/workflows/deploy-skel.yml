@@ -20,17 +20,17 @@ jobs:
           REPO="skele"
 
           mkdir -p $WORKING_DIR
+          pwd
+          ls -a
           cd $WORKING_DIR
+          pwd
+          ls -a
+          cd $REPO
+          pwd
+          ls -a
 
-          if [ ! -d $REPO ]; then
-            echo "working directory is empty, cloning skele..."
-            git clone git@github.com:jaronaearle/skele.git
-            cd $REPO
-          else
-            echo "repo exists, pulling latest changes..."
-            cd $REPO
-            git pull
-          fi
+          echo "repo exists, pulling latest changes..."
+          git pull
 
           echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
           echo "HONEY_BADGER_API_KEY=${{ secrets.HONEY_BADGER_API_KEY }}" >> .env
