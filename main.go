@@ -55,8 +55,6 @@ func main() {
 		},
 	}
 
-	h.AvyCrawlerHandler.SendTodaysAvyList()
-
 	ctx, cancel := context.WithCancel((context.Background()))
 
 	go startCron(ctx, h, cancel)

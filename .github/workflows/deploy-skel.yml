@@ -42,4 +42,8 @@ jobs:
             task docker-bot
             echo "bot container running..."
 
+            # persist docker docker process to server?
+            docker ps
+            sleep 10
+            docker logs $(docker ps -ql)
             docker ps
