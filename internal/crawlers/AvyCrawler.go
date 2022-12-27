@@ -38,7 +38,10 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	
 	fmt.Printf("GetReport - visiting at %v\n", time.Now())
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Forecast)
-	ac.Collector.Visit(url)
+	err = ac.Collector.Visit(url)
+	if err != nil {
+		fmt.Println("Visit Error: ", err)
+	}
 	fmt.Printf("GetReport - visited at %v\n", time.Now())
 
 	return
