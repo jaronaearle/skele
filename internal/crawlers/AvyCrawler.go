@@ -50,7 +50,9 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err error) {
 	configureCrawler(ac)
 
-	now := time.Now()
+	mtnTZ, _ := time.LoadLocation("America/Denver")
+
+	now := time.Now().In(mtnTZ)
 	today = fmt.Sprintf("%d/%d/%d", now.Month(), now.Day(), now.Year())
 
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {

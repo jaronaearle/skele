@@ -80,11 +80,8 @@ func startCron(pCtx context.Context, h Handlers, exit context.CancelFunc) {
 	defer exit()
 	defer fmt.Println("Exiting cron...")
 
-	mtnTZ, err := time.LoadLocation("America/Denver")
-	if err != nil {
-		honeybadger.Notify("Error loading america/denver tz: %w", err)
-		return
-	}
+	mtnTZ, _ := time.LoadLocation("America/Denver")
+
 	s := gocron.NewScheduler(mtnTZ)
 
 	s.Every(1).Days().At("07:30").Do(func() {
