@@ -88,6 +88,8 @@ func configureCrawler(ac *AvyCrawler) {
 
 	ac.Collector.SetRequestTimeout(60 * time.Second)
 
+	ac.Collector.CheckHead = true
+
 	ac.Collector.OnRequest(func(r *colly.Request) {
 		fmt.Printf("Visiting %v\n", r.URL.String())
 	})
