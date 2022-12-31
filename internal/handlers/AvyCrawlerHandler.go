@@ -47,7 +47,6 @@ func (a *AvyCrawlerHandler) getAvyReport() (rp data.AvyReport, err error) {
 
 	fmt.Printf("getAvyReport: Report: %v - %v\n", rp, time.Now())
 
-
 	return
 }
 

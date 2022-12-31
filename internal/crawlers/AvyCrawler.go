@@ -40,7 +40,7 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Forecast)
 	err = ac.Collector.Visit(url)
 	if err != nil {
-		fmt.Println("Visit Error: ", err)
+		fmt.Println("GetAvyReport: Visit Error: ", err)
 	}
 	fmt.Printf("GetReport - visited at %v\n", time.Now())
 
@@ -76,7 +76,11 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 	})
 
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Avalanches)
-	ac.Collector.Visit(url)
+	err = ac.Collector.Visit(url)
+	if err != nil {
+		fmt.Println("GetTodaysAvyList: Visit Error: ", err)
+	}
+	fmt.Printf("GetTodaysAvyList visited at %v\n", time.Now())
 
 	return
 }
