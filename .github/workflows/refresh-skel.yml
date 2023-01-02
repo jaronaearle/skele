@@ -1,0 +1,21 @@
+name: Nightly refresh
+on:
+  schedule:
+    # 12AM MST
+    - cron: "0 7 * * *"
+
+jobs:
+  deploy_bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure working directory
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          key: ${{ secrets.SSH_KEY }}
+          username: ${{ secrets.SSH_USER }}
+
+          script: |
+            task docker-kill-latest
+            task docker-bot
+            echo "Bot process $(docker ps -ql) refreshed successfully"
