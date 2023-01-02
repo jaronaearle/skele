@@ -30,14 +30,9 @@ jobs:
             fi
             echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
             echo "HONEY_BADGER_API_KEY=${{ secrets.HONEY_BADGER_API_KEY }}" >> .env
-            # time to build -- need to find and kill other docker bot processes running
-            docker stop $(docker ps -q)
+
+            task docker-kill-latest
+
             task docker-build
-            echo "bot built"
             task docker-bot
-            echo "bot container running..."
-            # persist docker docker process to server?
-            docker ps
-            sleep 10
-            docker logs $(docker ps -ql)
-            docker ps
+            echo "Bot process $(docker ps -ql) started successfully"

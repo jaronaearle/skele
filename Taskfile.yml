@@ -26,7 +26,7 @@ tasks:
     cmds:
       - docker run -d skele-go:0.1
 
-  docker-kill:
+  docker-kill-latest:
     desc: Stops the detached skele-go bot container
     cmds:
-      - docker stop skele-go:0.1
+      - docker stop $(docker ps -ql)
