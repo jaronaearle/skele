@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"log/syslog"
 	"os"
 	"os/signal"
 	"skele/config"
@@ -33,6 +35,15 @@ func main() {
 		honeybadger.Notify("main: Error initializing config: %w", err)
 		panic(err)
 	}
+
+	w, err := syslog.Dial("udp", cfg.PaperTrailHost, syslog.LOG_EMERG | syslog.LOG_KERN , "skele-bot")
+	if err != nil {
+		log.Fatal("failed to dial syslog")
+	}
+
+	w.Info("Info log")
+	w.Err("Err log")
+	w.Notice("Notice log")
 
 	c := colly.NewCollector(colly.AllowedDomains(crawlers.AvyCenterDomains...))
 	ac := crawlers.NewAvyCrawler(c)

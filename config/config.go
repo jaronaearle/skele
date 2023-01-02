@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	BotToken string
+	PaperTrailHost string
 }
 
 func GetConfig() (cfg Config, err error) {
@@ -25,15 +26,20 @@ func GetConfig() (cfg Config, err error) {
 		return
 	}
 
+	pt, err := getEnvVar("PAPER_TRAIL_HOST")
+	if err != nil {
+		honeybadger.Notify("GetConfig: Error loading paper trail host: %v", err)
+		return
+	}
+
+	// Configures connection to honeybadger
 	honeybadger.Configure(honeybadger.Configuration{APIKey: hb})
 
 	token := fmt.Sprintf("Bot %s", bt)
-	cfg = Config{BotToken: token}
+	cfg = Config{BotToken: token, PaperTrailHost: pt}
 
 	return
 }
-
-
 
 func getEnvVar(k string) (v string, err error) {
 	err = godotenv.Load(".env")

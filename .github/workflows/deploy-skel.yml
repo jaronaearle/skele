@@ -30,6 +30,7 @@ jobs:
             fi
             echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" > .env
             echo "HONEY_BADGER_API_KEY=${{ secrets.HONEY_BADGER_API_KEY }}" >> .env
+            echo "PAPER_TRAIL_HOST=${{ secrets.PAPER_TRAIL_HOST }}" >> .env
 
             task docker-kill-latest
 
