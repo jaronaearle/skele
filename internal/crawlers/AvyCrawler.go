@@ -2,6 +2,7 @@ package crawlers
 
 import (
 	"fmt"
+	"log/syslog"
 	"skele/internal/data"
 	"strings"
 	"time"
@@ -16,6 +17,7 @@ var (
 
 type AvyCrawler struct {
 	Collector *colly.Collector
+	Writer *syslog.Writer
 }
 
 func NewAvyCrawler(collector *colly.Collector) *AvyCrawler {
@@ -26,6 +28,7 @@ func NewAvyCrawler(collector *colly.Collector) *AvyCrawler {
 
 func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	configureCrawler(ac)
+	var info string
 
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		rp.Date = e.ChildText(".text_01 .nowrap")
@@ -33,22 +36,28 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 		rp.ImageUrl = e.ChildAttr(".compass-width", "src")
 		rp.SpecialBulletin = e.ChildText(".page-content .mb3")
 
-		fmt.Printf("\n\nDate: %v\nDetails: %v\nImgUrl: %v\nSpecialBulletin: %v\n\n", rp.Date, rp.Details, rp.ImageUrl, rp.SpecialBulletin)
+		info = fmt.Sprintf("\n\nDate: %v\nDetails: %v\nImgUrl: %v\nSpecialBulletin: %v\n\n", rp.Date, rp.Details, rp.ImageUrl, rp.SpecialBulletin)
+		ac.Writer.Info(info)
 	})
 	
 	fmt.Printf("GetReport - visiting at %v\n", time.Now())
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Forecast)
 	err = ac.Collector.Visit(url)
 	if err != nil {
-		fmt.Println("GetAvyReport: Visit Error: ", err)
+		err = fmt.Errorf("GetAvyReport: Visit Error: %w ", err)
+		ac.Writer.Err(err.Error())
+
+		return
 	}
-	fmt.Printf("GetReport - visited at %v\n", time.Now())
+	info = fmt.Sprintf("GetReport - visited at %v\n", time.Now())
+	ac.Writer.Info((info))
 
 	return
 }
 
 func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err error) {
 	configureCrawler(ac)
+	var info string
 
 	mtnTZ, _ := time.LoadLocation("America/Denver")
 
@@ -57,12 +66,10 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 
 	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		var avy data.Avy
-		fmt.Println("in avy list")
-		fmt.Println("today: ", today)
+		
 		e.ForEach("tbody tr", func(_ int, e *colly.HTMLElement) {
 			date := e.ChildText(".date-display-single")
-			fmt.Println("date: ", date)
-			fmt.Println("is avy today?", strings.EqualFold(date, today))
+
 			if strings.EqualFold(date, today) {
 				fmt.Println("Avy today - adding to list")
 				avy.Date = date
@@ -72,15 +79,21 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 
 				avs = append(avs, avy)
 				} 
+
+				info = fmt.Sprintf("%v avys %v", date ,avs)
+				ac.Writer.Info(info)
 			})
+		ac.Writer.Notice("No avys today")
 	})
 
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Avalanches)
 	err = ac.Collector.Visit(url)
 	if err != nil {
-		fmt.Println("GetTodaysAvyList: Visit Error: ", err)
+		err = fmt.Errorf("GetTodaysAvyList: Visit Error: %w", err)
+		ac.Writer.Err(err.Error())
+
+		return
 	}
-	fmt.Printf("GetTodaysAvyList visited at %v\n", time.Now())
 
 	return
 }
@@ -95,17 +108,18 @@ func configureCrawler(ac *AvyCrawler) {
 	ac.Collector.CheckHead = true
 
 	ac.Collector.OnRequest(func(r *colly.Request) {
-		fmt.Printf("Visiting %v\n", r.URL.String())
+		info := fmt.Sprintf("Visiting %v\n", r.URL.String())
+		ac.Writer.Info(info)
 	})
 
 	ac.Collector.OnResponse(func(r *colly.Response) {
-		fmt.Printf("\nReceived response from: %v\n", r.Request.URL)
-		fmt.Printf("\nResponse request: %v\n", r.Request)
-		fmt.Printf("\nResponse headers: %v\n", r.Headers)
-		fmt.Printf("\nResponse statusCode: %v\n", r.StatusCode)
+		info := fmt.Sprintf("\nReceived response from: %v\n", r.Request.URL)
+		ac.Writer.Info((info))
 	})
 
 	ac.Collector.OnError(func(r *colly.Response, err error) {
-		honeybadger.Notify("AvyCrawler: Error on response from: %v\n%w",r.Request.URL, err)
+		err = fmt.Errorf("AvyCrawler: Error on response from: %v\n%w",r.Request.URL, err)
+		ac.Writer.Err(err.Error())
+		honeybadger.Notify(err)
 	})
 }
