@@ -53,7 +53,7 @@ func main() {
 	session, err := discordgo.New(cfg.BotToken)
 	if err != nil {
 		err = fmt.Errorf("main: Error creating bot session: %w", err)
-		w.Writer.Err(err.Error())
+		log.Println("err.Error() ", err.Error())
 		honeybadger.Notify(err)
 		panic(err)
 	}
@@ -87,13 +87,13 @@ func main() {
 	// 	return
 	// }
 	// cancel()
-	w.Writer.Notice("Gracefully returning to the grave...")
+	log.Println("Gracefully returning to the grave...")
 }
 
 func startCron(pCtx context.Context, h Handlers, w *syslog.Writer, exit context.CancelFunc) {
 	w.Info("Starting cron...")
 	defer exit()
-	defer w.Info("Exiting cron...")
+	defer log.Println("Exiting cron...")
 
 	mtnTZ, _ := time.LoadLocation("America/Denver")
 
@@ -118,13 +118,13 @@ func startCron(pCtx context.Context, h Handlers, w *syslog.Writer, exit context.
 }
 
 func startBot(pCtx context.Context, bot *bot.DiscordBot, h Handlers, w *syslog.Writer, exit context.CancelFunc) {
-	w.Info("Starting bot session...")
+	log.Println("Starting bot session...")
 	bot.RegisterHandlers()
 
 	err := bot.Session.Open()
 	if err != nil {
 		err= fmt.Errorf("startBot: Error opening websocket connection: %w", err)
-		w.Err(err.Error())
+		log.Println("err ",err)
 		honeybadger.Notify(err)
 		return
 	}
