@@ -66,6 +66,7 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 		
 		e.ForEach("tbody tr", func(_ int, e *colly.HTMLElement) {
 			date := e.ChildText(".date-display-single")
+			log.Printf("today: %s --- date: %s", today,  date)
 
 			if strings.EqualFold(date, today) {
 				log.Println("Avy today - adding to list")
