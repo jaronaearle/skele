@@ -23,6 +23,7 @@ import (
 )
 
 var (
+	// add a redeploy flag?
 	exp bool
 )
 
@@ -99,11 +100,7 @@ func startCron(pCtx context.Context, h Handlers, w *syslog.Writer, exit context.
 		h.AvyCrawlerHandler.SendAvyReport()
 	})
 
-	s.Every(1).Days().At("23:30").Do(func() {
-		h.AvyCrawlerHandler.SendTodaysAvyList()
-	})
-
-	s.Every(1).Days().At("00:00").Do(func() {
+	s.Every(1).Days().At("23:00").Do(func() {
 		h.AvyCrawlerHandler.SendTodaysAvyList()
 	})
 

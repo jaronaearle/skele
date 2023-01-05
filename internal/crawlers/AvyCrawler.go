@@ -26,9 +26,10 @@ func NewAvyCrawler(collector *colly.Collector) *AvyCrawler {
 }
 
 func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
-	configureCrawler(ac)
+	reportCollector := ac.Collector.Clone()
+	configureCrawler(reportCollector)
 
-	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
+	reportCollector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		rp.Date = e.ChildText(".text_01 .nowrap")
 		rp.Details = e.ChildText(".text_03")
 		rp.ImageUrl = e.ChildAttr(".compass-width", "src")
@@ -39,7 +40,7 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 	
 	fmt.Printf("GetReport - visiting at %v\n", time.Now())
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Forecast)
-	err = ac.Collector.Visit(url)
+	err = reportCollector.Visit(url)
 	if err != nil {
 		err = fmt.Errorf("GetAvyReport: Visit Error: %w ", err)
 		log.Println(err)
@@ -52,14 +53,15 @@ func (ac *AvyCrawler) GetReport() (rp data.AvyReport, err error) {
 }
 
 func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err error) {
-	configureCrawler(ac)
+	avyListCollector := ac.Collector.Clone()
+	configureCrawler(avyListCollector)
 
 	mtnTZ, _ := time.LoadLocation("America/Denver")
 
 	now := time.Now().In(mtnTZ)
 	today = fmt.Sprintf("%v/%v/%v", now.Month(), now.Day(), now.Year())
 
-	ac.Collector.OnHTML(".view-content", func(e *colly.HTMLElement) {
+	avyListCollector.OnHTML(".view-content", func(e *colly.HTMLElement) {
 		var avy data.Avy
 		
 		e.ForEach("tbody tr", func(_ int, e *colly.HTMLElement) {
@@ -82,7 +84,7 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 	})
 
 	url := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, data.AvyUrlPaths.Avalanches)
-	err = ac.Collector.Visit(url)
+	err = avyListCollector.Visit(url)
 	if err != nil {
 		err = fmt.Errorf("GetTodaysAvyList: Visit Error: %w", err)
 		log.Println(err)
@@ -93,26 +95,26 @@ func (ac *AvyCrawler) GetTodaysAvyList() (avs []data.Avy, today string, err erro
 	return
 }
 
-func configureCrawler(ac *AvyCrawler) {
-	ac.Collector.Limit(&colly.LimitRule{
+func configureCrawler(collector *colly.Collector) {
+	collector.Limit(&colly.LimitRule{
 		Parallelism: 1, RandomDelay: 7 * time.Second,
 	})
 
-	ac.Collector.SetRequestTimeout(60 * time.Second)
+	collector.SetRequestTimeout(60 * time.Second)
 
-	ac.Collector.CheckHead = true
+	collector.CheckHead = true
 
-	ac.Collector.AllowURLRevisit = true
+	collector.AllowURLRevisit = true
 
-	ac.Collector.OnRequest(func(r *colly.Request) {
+	collector.OnRequest(func(r *colly.Request) {
 		log.Printf("Visiting %v\n", r.URL.String())
 	})
 
-	ac.Collector.OnResponse(func(r *colly.Response) {
+	collector.OnResponse(func(r *colly.Response) {
 		log.Printf("\nReceived response from: %v\n", r.Request.URL)
 	})
 
-	ac.Collector.OnError(func(r *colly.Response, err error) {
+	collector.OnError(func(r *colly.Response, err error) {
 		err = fmt.Errorf("AvyCrawler: Error on response from: %v\n%w",r.Request.URL, err)
 		log.Println(err)
 		honeybadger.Notify(err)
