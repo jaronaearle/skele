@@ -6,7 +6,6 @@ import (
 	"skele/internal/data"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/honeybadger-io/honeybadger-go"
 )
 
 type DiscordBot struct {
@@ -59,7 +58,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			err = fmt.Errorf("messageCreate: Error getting channel messages: %w", err)
 			log.Println(err)
-			honeybadger.Notify(err)
 
 			return
 		}

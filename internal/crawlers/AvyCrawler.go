@@ -3,7 +3,6 @@ package crawlers
 import (
 	"fmt"
 	"log"
-	"log/syslog"
 	"skele/internal/data"
 	"strings"
 	"time"
@@ -18,7 +17,6 @@ var (
 
 type AvyCrawler struct {
 	Collector *colly.Collector
-	Writer *syslog.Writer
 }
 
 func NewAvyCrawler(collector *colly.Collector) *AvyCrawler {

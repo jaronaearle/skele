@@ -87,7 +87,7 @@ func main() {
 }
 
 func startCron(pCtx context.Context, h Handlers, w *syslog.Writer, exit context.CancelFunc) {
-	w.Info("Starting cron...")
+	log.Println("Starting cron...")
 	defer exit()
 	defer log.Println("Exiting cron...")
 

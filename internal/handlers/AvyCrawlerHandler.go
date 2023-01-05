@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"skele/internal/bot"
 	"skele/internal/crawlers"
 	"skele/internal/data"
@@ -9,7 +10,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/honeybadger-io/honeybadger-go"
 )
 
 const (
@@ -25,27 +25,34 @@ type AvyCrawlerHandler struct {
 }
 
 func (a *AvyCrawlerHandler) SendAvyReport() {
-	rp, _ := a.getAvyReport()
-	em := buildReportEmbed(rp)
-
-	fmt.Printf("SendAvyReport: Report: %v - %v\n", rp, time.Now())
-
-	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
+	rp, err := a.getAvyReport()
 	if err != nil {
-		honeybadger.Notify("SendAvyReport: Error sending embed message: %w\n", err)
+		err = fmt.Errorf("SendAvyReport: %w", err)
+		log.Println(err)
+
 		return
 	}
-	fmt.Printf("SendAvyReport: sent report message - %v\n", time.Now())
+
+	em := buildReportEmbed(rp)
+
+	err = a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
+	if err != nil {
+		err = fmt.Errorf("SendAvyReport: Error sending embed message: %w", err)
+		log.Println(err)
+
+		return
+	}
+	log.Println("SendAvyReport: sent report message")
 }
 
 func (a *AvyCrawlerHandler) getAvyReport() (rp data.AvyReport, err error) {
 	rp, err = a.AvyCrawler.GetReport()
 	if err != nil {
-		honeybadger.Notify("getAvyReport: Error calling GetReport: %w", err)
+		err = fmt.Errorf("getAvyReport: Error calling GetReport: %w", err)
+		log.Println(err)
+
 		return
 	}
-
-	fmt.Printf("getAvyReport: Report: %v - %v\n", rp, time.Now())
 
 	return
 }
@@ -56,7 +63,7 @@ func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 	description := fmt.Sprintf("%s\n\n%s", rp.Details, rp.SpecialBulletin)
 	imgUrl := fmt.Sprintf("%s%s", data.AvyUrlPaths.BaseUrl, rp.ImageUrl)
 
-	fmt.Printf("buildReportEmbed: Report: %v - %v\n", rp, time.Now())
+	log.Printf("buildReportEmbed: Report: %v - %v\n", rp, time.Now())
 
 	em = &discordgo.MessageEmbed{
 		URL:         url,
@@ -75,7 +82,8 @@ func buildReportEmbed(rp data.AvyReport) (em *discordgo.MessageEmbed) {
 func (a *AvyCrawlerHandler) SendTodaysAvyList() {
 	avs, date, _ := a.getAvyList()
 	if len(avs) == 0 {
-		fmt.Println("SendTodaysAvyList: no avys today, exiting")
+		log.Println("SendTodaysAvyList: no avys today, exiting")
+
 		return
 	}
 
@@ -83,17 +91,20 @@ func (a *AvyCrawlerHandler) SendTodaysAvyList() {
 
 	err := a.DiscordBot.SendEmbedMessage(em, data.ChannelIDs.SkiPeeps)
 	if err != nil {
-		honeybadger.Notify("SendAvyReport: Error sending embed message: %w\n", err)
+		err = fmt.Errorf("SendAvyReport: Error sending embed message: %w", err)
+		log.Println(err)
+
 		return
 	}
 
-	fmt.Printf("SendAvyReport: sent report message - %v\n", time.Now())
+	log.Println("SendAvyReport: sent report message")
 }
 
 func (a *AvyCrawlerHandler) getAvyList() (avs []data.Avy, date string, err error) {
 	avs, date, err = a.AvyCrawler.GetTodaysAvyList()
 	if err != nil {
-		honeybadger.Notify("getAvyList: Error: %w", err)
+		err = fmt.Errorf("getAvyList: Error: %w", err)
+		
 		return
 	}
 
@@ -116,8 +127,6 @@ func buildTodaysAvyEmbed(avs []data.Avy, date string) (em *discordgo.MessageEmbe
 	mAvy := formatByRegion(mList, moab)
 
 	content := fmt.Sprintf("%s\n%s%s%s%s", slcAvy, ogAvy, prAvy, uAvy, mAvy)
-	fmt.Printf("buildTodaysAvyEmbed: content: %s\n", content)
-
 
 	em = &discordgo.MessageEmbed{
 		Title:       title,
@@ -139,7 +148,8 @@ func filterByRegion(avs []data.Avy, r string) (fAvs []data.Avy) {
 
 func formatByRegion(avs []data.Avy, r string) (regionAvys string) {
 	if len(avs) == 0 {
-		fmt.Printf("formatByRegion: no avy activity for given region: %s\n", r)
+		log.Printf("formatByRegion: no avy activity for given region: %s\n", r)
+
 		return
 	}
 
@@ -150,7 +160,6 @@ func formatByRegion(avs []data.Avy, r string) (regionAvys string) {
 	}
 
 	regionAvys = fmt.Sprintf("%s\n%s\n", r, avys)
-	fmt.Println(regionAvys)
 
 	return
 }
