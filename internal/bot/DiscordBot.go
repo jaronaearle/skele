@@ -2,8 +2,8 @@ package bot
 
 import (
 	"fmt"
+	"log"
 	"skele/internal/data"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/honeybadger-io/honeybadger-go"
@@ -23,7 +23,6 @@ func NewDiscordBot(session *discordgo.Session, exp bool) *DiscordBot {
 
 func (db *DiscordBot) RegisterHandlers() {
 	db.Session.AddHandler(messageCreate)
-
 	db.Session.Identify.Intents = discordgo.IntentGuildMessages
 }
 
@@ -37,17 +36,20 @@ func (db *DiscordBot) SendEmbedMessage(m *discordgo.MessageEmbed, id string) (er
 
 	_, err = db.Session.ChannelMessageSendEmbed(channel, m)
 	if err != nil {
-		honeybadger.Notify("SendMessageEmbed: Error sending embed message: %w\n", err)
+		err = fmt.Errorf("SendMessageEmbed: Error sending embed message: %w", err)
+		log.Println(err)
+
 		return
 	}
 	
-	fmt.Printf("Embed message sent to %s at %v", channel, time.Now().Local())
+	log.Printf("Embed message sent to %s\n", channel)
 
 	return
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
+		// TODO figure out custom messaging
 		return
 	}
 
@@ -55,8 +57,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Content == "" {
 		msgs, err := s.ChannelMessages(m.ChannelID, 1, "", "", m.ID)
 		if err != nil {
-			honeybadger.Notify("messageCreate: Error getting channel messages: %w", err)
+			err = fmt.Errorf("messageCreate: Error getting channel messages: %w", err)
+			log.Println(err)
+			honeybadger.Notify(err)
+
+			return
 		}
-		fmt.Println(msgs)
+
+		log.Println(msgs)
 	}
 }

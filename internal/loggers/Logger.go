@@ -4,6 +4,9 @@ import (
 	"log/syslog"
 )
 
+// https://stackoverflow.com/questions/26120698/how-to-change-the-date-time-format-of-gos-log-package
+// Maybe add more  customization to the logs
+
 type LogWriter struct {
 	Writer *syslog.Writer
 }

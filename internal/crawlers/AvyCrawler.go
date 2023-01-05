@@ -104,6 +104,8 @@ func configureCrawler(ac *AvyCrawler) {
 
 	ac.Collector.CheckHead = true
 
+	ac.Collector.AllowURLRevisit = true
+
 	ac.Collector.OnRequest(func(r *colly.Request) {
 		log.Printf("Visiting %v\n", r.URL.String())
 	})

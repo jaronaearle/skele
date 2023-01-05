@@ -40,12 +40,8 @@ func main() {
 	w := loggers.NewWriter(cfg.PaperTrailHost)
 
 	log.SetOutput(w.Writer)
-	log.Println("hellooo from main")
-
-
-	w.LogInfo("Info log")
-	w.LogError("Err log")
-	w.LogNotice("Notice log")
+	log.SetFlags(log.Ldate)
+	log.SetFlags(log.Ltime)
 
 	c := colly.NewCollector(colly.AllowedDomains(crawlers.AvyCenterDomains...))
 	ac := crawlers.NewAvyCrawler(c)
