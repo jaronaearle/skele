@@ -37,3 +37,10 @@ jobs:
             task docker-build
             task docker-bot
             echo "Bot process $(docker ps -ql) started successfully"
+
+
+            echo "viewing container stuff"
+            docker container ls -a
+
+            echo "viewing image stuff"
+            docker image ls -a
