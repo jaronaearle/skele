@@ -22,10 +22,7 @@ import (
 	"github.com/honeybadger-io/honeybadger-go"
 )
 
-var (
-	// add a redeploy flag?
-	exp bool
-)
+var exp bool
 
 func main() {
 	defer honeybadger.Monitor()
@@ -116,8 +113,8 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, h Handlers, w *syslog.W
 
 	err := bot.Session.Open()
 	if err != nil {
-		err= fmt.Errorf("startBot: Error opening websocket connection: %w", err)
-		log.Println("err ",err)
+		err = fmt.Errorf("startBot: Error opening websocket connection: %w", err)
+		log.Println("err ", err)
 		honeybadger.Notify(err)
 		return
 	}
@@ -127,6 +124,6 @@ func startBot(pCtx context.Context, bot *bot.DiscordBot, h Handlers, w *syslog.W
 }
 
 type Handlers struct {
-	AvyCrawlerHandler        handlers.AvyCrawlerHandler
+	AvyCrawlerHandler       handlers.AvyCrawlerHandler
 	ScheduledMessageHandler handlers.ScheduledMessageHandler
 }
